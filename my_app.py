@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, make_response
 import requests as r
 from collections import Counter
 import os
+from tabulate import tabulate
 
 try:
     from passwords import BEARER
@@ -62,11 +63,13 @@ def donut_api():
 def donut():
     text = request.form['text']
     user_id = f'<@{ request.form["user_id"] }>'
+
     if text == 'me':
         a.create_entry(user_id)
         out = f'{user_id} has been donutted!!'
     elif text == 'shame':
-        out = a.hall_of_shame()
+        shame = a.hall_of_shame()
+        out = f'```{tabulate(shame, tablefmt='simple')}```'
     else:
         out = 'use /donut me to donut someone or /donut shame to see the shame board'
 
