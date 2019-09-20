@@ -63,9 +63,10 @@ def donut():
 #    user = request.form['user']
     text = request.form['text']
     user_id = request.form['user_id']
+    user_name = request.form['user_name']
     out = {
             "response_type": "in_channel",
-            "text": f'{text}, {user_id}'
+            "text": f'{text}, {user_id}, {user_name}'
     }
     return jsonify(out)
 
