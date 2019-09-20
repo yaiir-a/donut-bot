@@ -61,7 +61,7 @@ def donut_api():
 @app.route("/donut", methods=['POST'])
 def donut():
     text = request.form['text']
-    user_id = f'<@{ request.form['user_id'] }>'
+    user_id = f'<@{ request.form["user_id"] }>'
     if text == 'me':
         a.create_entry(user_id)
         out = f'{user_id} has been donutted!!'
