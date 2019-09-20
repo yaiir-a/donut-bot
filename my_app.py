@@ -74,7 +74,7 @@ def donut():
             "response_type": "in_channel",
             "text": out
     }
-    return jsonify(out)
+    return jsonify(response)
 
 
 
