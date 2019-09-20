@@ -1,7 +1,12 @@
 from flask import Flask, jsonify, request, make_response
 import requests as r
 from collections import Counter
-from passwords import BEARER
+import os
+
+try:
+    from passwords import BEARER
+except:
+    BEARER = os.environ['BEARER']
 
 class Airtable(object):
     def __init__(self):
@@ -36,7 +41,6 @@ class Airtable(object):
 
 
 a = Airtable()
-
 
 
 app = Flask(__name__)
