@@ -20,9 +20,9 @@ class Airtable(object):
         self.resp = r.get(self.base_url, headers=self.headers, params=params)
         return self.resp.json()
 
-    def create_entry(self, donut, username=''):
+    def create_entry(self, donut, user_name=''):
         payload = {
-            "records":[{'fields':{'donut':donut, 'username':username}}]
+            "records":[{'fields':{'donut':donut, 'user_name':user_name}}]
         }
         self.resp = r.post(self.base_url, headers=self.headers, json=payload)
         return self.resp.json()
@@ -63,10 +63,10 @@ def donut_api():
 def donut():
     text = request.form['text']
     user_id = f'<@{ request.form["user_id"] }>'
-    username = request.form["user_name"]
+    user_name = request.form["user_name"]
 
     if text == 'me':
-        a.create_entry(user_id, username)
+        a.create_entry(user_id, user_name)
         out = f'{user_id} has been donutted!!'
     elif text == 'shame':
         shame = a.hall_of_shame()
