@@ -50,7 +50,7 @@ app = Flask(__name__)
 def home():
     return 'hello from the app'
 
-@app.route("/donut_api", methods=['GET', 'POST'])
+@app.route("/donut", methods=['GET', 'POST'])
 def donut_api():
     if request.method == 'POST':
         body = request.get_json()
@@ -59,7 +59,7 @@ def donut_api():
     else:
         return jsonify(a.hall_of_shame())
 
-@app.route("/donut", methods=['POST'])
+@app.route("/slack", methods=['POST'])
 def donut():
     text = request.form['text']
     user_id = f'<@{ request.form["user_id"] }>'
