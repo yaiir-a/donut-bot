@@ -60,11 +60,11 @@ def donut_api():
 
 @app.route("/donut", methods=['POST'])
 def donut():
-    user = request.form['user']
+#    user = request.form['user']
     text = request.form['text']
     out = {
             "response_type": "in_channel",
-            "text": f'{user}, {text}'
+            "text": f'{text}'
     }
     return jsonify(out)
 
