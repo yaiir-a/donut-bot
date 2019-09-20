@@ -60,13 +60,19 @@ def donut_api():
 
 @app.route("/donut", methods=['POST'])
 def donut():
-#    user = request.form['user']
     text = request.form['text']
-    user_id = request.form['user_id']
-    user_name = request.form['user_name']
-    out = {
+    user_id = f'<@{ request.form['user_id'] }>'
+    if text == 'me':
+        a.create_entry(user_id)
+        out = f'{user_id} has been donutted!!'
+    elif text == 'shame':
+        out = a.hall_of_shame()
+    else:
+        out = 'use /donut me to donut someone or /donut shame to see the shame board'
+
+    response = {
             "response_type": "in_channel",
-            "text": f'{text}, <@{user_id}>'
+            "text": out
     }
     return jsonify(out)
 
