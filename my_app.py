@@ -49,14 +49,28 @@ app = Flask(__name__)
 def home():
     return 'hello from the app'
 
-@app.route("/donut", methods=['GET', 'POST'])
-def donut():
+@app.route("/donut_api", methods=['GET', 'POST'])
+def donut_api():
     if request.method == 'POST':
         body = request.get_json()
         resp = a.create_entry(body['donut'])
         return jsonify(resp)
     else:
         return jsonify(a.hall_of_shame())
+
+@app.route("/donut", methods=['POST'])
+def donut_api():
+    out = {
+            "response_type": "in_channel",
+            "text": '```{}```'.format('hello')
+    }
+    return jsonify(out)
+    user = request.form['user']
+    text = request.form['text']
+    return jsonify(user+text)
+
+
+
 
 
 
