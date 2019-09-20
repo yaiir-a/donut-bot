@@ -54,7 +54,7 @@ def home():
 def donut_api():
     if request.method == 'POST':
         body = request.get_json()
-        resp = a.create_entry(body['donut'])
+        resp = a.create_entry(**body)
         return jsonify(resp)
     else:
         return jsonify(a.hall_of_shame())
