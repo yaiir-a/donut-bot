@@ -69,7 +69,7 @@ def donut():
         out = f'{user_id} has been donutted!!'
     elif text == 'shame':
         shame = a.hall_of_shame()
-        out = f'```{tabulate(shame, tablefmt='simple')}```'
+        out = f'```{tabulate(shame, tablefmt="simple")}```'
     else:
         out = 'use /donut me to donut someone or /donut shame to see the shame board'
 
