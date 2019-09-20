@@ -47,7 +47,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return latest
+    return 'hello from the app'
 
 @app.route("/donut", methods=['GET', 'POST'])
 def donut():
