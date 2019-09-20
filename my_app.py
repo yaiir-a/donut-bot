@@ -59,7 +59,7 @@ def donut_api():
         return jsonify(a.hall_of_shame())
 
 @app.route("/donut", methods=['POST'])
-def donut_api():
+def donut():
     out = {
             "response_type": "in_channel",
             "text": '```{}```'.format('hello')
