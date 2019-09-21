@@ -38,9 +38,7 @@ class Airtable(object):
          names = self.donuts()
          return Counter(names).most_common()
 
-
 a = Airtable()
-
 
 app = Flask(__name__)
 
@@ -67,9 +65,10 @@ def donut():
         a.create_entry(user_id, user_name)
         out = f'''{":doughnut:" * 11}\n:doughnut:{user_id} has been donutted!!:doughnut:\n{":doughnut:" * 11}'''
     elif text == 'shame':
+        latest = a.latest()
         shame = a.hall_of_shame()
         table = tabulate(shame, tablefmt="simple", headers=['Donut', '#'])
-        out = f'''```Welcome to the Hall of Shame!\n{table}```'''
+        out = f'''```Welcome to the Hall of Shame!\nThe last person to get donutted was {latest}.\n{table}```'''
     else:
         out = ''':wave: Hi there, here is how you can use Donut Bot\n>`/donut me` to donut someone\n>`/donut shame` to see the Donut Hall of Shame'''
 
