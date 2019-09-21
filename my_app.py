@@ -68,7 +68,7 @@ def donut():
         latest = a.latest()
         shame = a.hall_of_shame()
         table = tabulate(shame, tablefmt="simple", headers=['Donut', '#'])
-        out = f'''```Welcome to the Hall of Shame!\nThe last person to get donutted was {latest}.\n{table}```'''
+        out = f'''```Welcome to the Hall of Shame!\n\nThe last person to get donutted was {latest}.\n\n{table}```'''
     else:
         out = ''':wave: Hi there, here is how you can use Donut Bot\n>`/donut me` to donut someone\n>`/donut shame` to see the Donut Hall of Shame'''
 
