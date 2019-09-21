@@ -17,15 +17,13 @@ class Airtable(object):
 
     def get_all(self):
         params = {'view':'sorted'}
-        self.resp = r.get(self.base_url, headers=self.headers, params=params)
-        return self.resp.json()
+        return r.get(self.base_url, headers=self.headers, params=params).json()
 
     def create_entry(self, donut, user_name=''):
         payload = {
             "records":[{'fields':{'donut':donut, 'user_name':user_name}}]
         }
-        self.resp = r.post(self.base_url, headers=self.headers, json=payload)
-        return self.resp.json()
+        return r.post(self.base_url, headers=self.headers, json=payload).json()
 
     def donuts(self):
          entries = self.get_all()
@@ -54,10 +52,10 @@ def home():
 def donut_api():
     if request.method == 'POST':
         body = request.get_json()
-        resp = a.create_entry(**body)
-        return jsonify(resp)
+        out = a.create_entry(**body)
     else:
-        return jsonify(a.hall_of_shame())
+        out = a.hall_of_shame()
+    return jsonify(out)
 
 @app.route("/slack", methods=['POST'])
 def donut():
@@ -67,10 +65,14 @@ def donut():
 
     if text == 'me':
         a.create_entry(user_id, user_name)
-        out = f'{user_id} has been donutted!!'
+        out = f'''{":doughnut:" * 11}
+        :doughnut:{user_id} has been donutted!!:doughnut:
+        {":doughnut:" * 11}'''
     elif text == 'shame':
         shame = a.hall_of_shame()
-        out = f'```{tabulate(shame, tablefmt="simple")}```'
+        out = f''''```:trophy::doughnut: Welcome to the Hall of Shame :doughnut: :trophy:
+        {tabulate(shame, tablefmt="simple", headers=['Donut', '#'])}
+        ```'''
     else:
         out = ''':wave: Hi there, here is how you can use Donut Bot
         >`/donut me` to donut someone
@@ -81,11 +83,6 @@ def donut():
             "text": out
     }
     return jsonify(response)
-
-
-
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)
