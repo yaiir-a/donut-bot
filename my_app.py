@@ -66,16 +66,16 @@ def donut():
     if text == 'me':
         a.create_entry(user_id, user_name)
         out = f'''{":doughnut:" * 11}\n\
-        :doughnut:{user_id} has been donutted!!:doughnut:\n\
-        {":doughnut:" * 11}'''
+    :doughnut:{user_id} has been donutted!!:doughnut:\n\
+    {":doughnut:" * 11}'''
     elif text == 'shame':
         shame = a.hall_of_shame()
-        out = f'''```Welcome to the Hall of Shame!\n\
-        {tabulate(shame, tablefmt="simple", headers=['Donut', '#'])}```'''
+        out = f'''```Welcome to the Hall of Shame!\n
+    {tabulate(shame, tablefmt="simple", headers=['Donut', '#'])}```'''
     else:
         out = ''':wave: Hi there, here is how you can use Donut Bot
-        >`/donut me` to donut someone
-        >`/donut shame` to see the Donut Hall of Shame'''
+    >`/donut me` to donut someone
+    >`/donut shame` to see the Donut Hall of Shame'''
 
     response = {
             "response_type": "in_channel",
