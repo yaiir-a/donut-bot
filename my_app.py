@@ -52,10 +52,10 @@ def home():
 def donut_api():
     if request.method == 'POST':
         body = request.get_json()
-        out = a.create_entry(**body)
+        response = a.create_entry(**body)
     else:
-        out = a.hall_of_shame()
-    return jsonify(out)
+        response = a.hall_of_shame()
+    return jsonify(response)
 
 @app.route("/slack", methods=['POST'])
 def donut():
@@ -65,14 +65,13 @@ def donut():
 
     if text == 'me':
         a.create_entry(user_id, user_name)
-        out = f'''{":doughnut:" * 11}
+        out = f'''    {":doughnut:" * 11}
         :doughnut:{user_id} has been donutted!!:doughnut:
         {":doughnut:" * 11}'''
     elif text == 'shame':
         shame = a.hall_of_shame()
-        out = f''''```:trophy::doughnut: Welcome to the Hall of Shame :doughnut: :trophy:
-        {tabulate(shame, tablefmt="simple", headers=['Donut', '#'])}
-        ```'''
+        out = f'''```Welcome to the Hall of Shame!
+        {tabulate(shame, tablefmt="simple", headers=['Donut', '#'])}```'''
     else:
         out = ''':wave: Hi there, here is how you can use Donut Bot
         >`/donut me` to donut someone
