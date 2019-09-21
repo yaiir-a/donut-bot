@@ -72,7 +72,9 @@ def donut():
         shame = a.hall_of_shame()
         out = f'```{tabulate(shame, tablefmt="simple")}```'
     else:
-        out = 'use /donut me to donut someone or /donut shame to see the shame board'
+        out = ''':wave: Hi there, here is how you can use Donut Bot
+        >`/donut me` to donut someone
+        >`/donut shame` to see the Donut Hall of Shame'''
 
     response = {
             "response_type": "in_channel",
