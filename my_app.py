@@ -48,6 +48,9 @@ def home():
 
 @app.route("/donut", methods=['GET', 'POST'])
 def donut_api():
+    if request.headers['Authorization'] != a.headers['Authorization']:
+        return jsonify({"message": "No"}), 401
+
     if request.method == 'POST':
         body = request.get_json()
         response = a.create_entry(**body)
