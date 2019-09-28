@@ -3,6 +3,7 @@ import requests as r
 from collections import Counter
 import os
 from tabulate import tabulate
+from datetime import datetime, timedelta
 
 try:
     from passwords import BEARER
@@ -20,10 +21,14 @@ class Airtable(object):
         return r.get(self.base_url, headers=self.headers, params=params).json()
 
     def create_entry(self, donut, user_name=''):
-        payload = {
-            "records":[{'fields':{'donut':donut, 'user_name':user_name}}]
-        }
-        return r.post(self.base_url, headers=self.headers, json=payload).json()
+        try:
+            self._validate_entry(donut)
+            payload = {
+                "records":[{'fields':{'donut':donut, 'user_name':user_name}}]
+            }
+            return r.post(self.base_url, headers=self.headers, json=payload).json()
+        except ValueError:
+            return {'error': 'you need to wait a bit before donutting again'}
 
     def donuts(self):
          entries = self.get_all()
@@ -37,6 +42,17 @@ class Airtable(object):
     def hall_of_shame(self):
          names = self.donuts()
          return Counter(names).most_common()
+
+    def _validate_entry(self, donut):
+        match_time = False
+        for d in self.get_all()['records']:
+            if d['fields']['donut'] == donut:
+                match_time = datetime.fromisoformat(d['createdTime'][:-1])
+                break
+        if match_time:
+            acceptable_start = datetime.utcnow() - timedelta(minutes=5)
+            if match_time > acceptable_start:
+                raise ValueError
 
 a = Airtable()
 
@@ -55,7 +71,7 @@ def donut_api():
         body = request.get_json()
         response = a.create_entry(**body)
     else:
-        response = a.get_all()
+        response = a.hall_of_shame()
     return jsonify(response)
 
 @app.route("/slack", methods=['POST'])
