@@ -21,27 +21,24 @@ class Airtable(object):
         return r.get(self.base_url, headers=self.headers, params=params).json()
 
     def create_entry(self, donut, user_name=''):
-        try:
-            self._validate_entry(donut)
-            payload = {
-                "records":[{'fields':{'donut':donut, 'user_name':user_name}}]
-            }
-            return r.post(self.base_url, headers=self.headers, json=payload).json()
-        except ValueError:
-            return {'error': 'you need to wait a bit before donutting again'}
+        self._validate_entry(donut)
+        payload = {
+            "records":[{'fields':{'donut':donut, 'user_name':user_name}}]
+        }
+        return r.post(self.base_url, headers=self.headers, json=payload).json()
 
     def donuts(self):
-         entries = self.get_all()
-         names = [entry['fields']['display_name'] for entry in entries['records']]
-         return names
+        entries = self.get_all()
+        names = [entry['fields']['display_name'] for entry in entries['records']]
+        return names
 
     def latest(self):
-         names = self.donuts()
-         return names[0]
+        names = self.donuts()
+        return names[0]
 
     def hall_of_shame(self):
-         names = self.donuts()
-         return Counter(names).most_common()
+        names = self.donuts()
+        return Counter(names).most_common()
 
     def _validate_entry(self, donut):
         match_time = False
@@ -69,7 +66,10 @@ def donut_api():
 
     if request.method == 'POST':
         body = request.get_json()
-        response = a.create_entry(**body)
+        try:
+            response = a.create_entry(**body)
+        except ValueError:
+            response = {'message':'Nah'}
     else:
         response = a.hall_of_shame()
     return jsonify(response)
@@ -81,8 +81,11 @@ def donut():
     user_name = request.form["user_name"]
 
     if text == 'me':
-        a.create_entry(user_id, user_name)
-        out = f'''{":doughnut:" * 11}\n:doughnut:{user_id} has been donutted!!:doughnut:\n{":doughnut:" * 11}'''
+        try:
+            a.create_entry(user_id, user_name)
+            out = f'''{":doughnut:" * 11}\n:doughnut:{user_id} has been donutted!!:doughnut:\n{":doughnut:" * 11}'''
+        except ValueError:
+            out = 'Please wait a bit before donutting again'
     elif text == 'shame':
         latest = a.latest()
         shame = a.hall_of_shame()
