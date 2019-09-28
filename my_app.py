@@ -55,7 +55,7 @@ def donut_api():
         body = request.get_json()
         response = a.create_entry(**body)
     else:
-        response = a.hall_of_shame()
+        response = a.get_all()
     return jsonify(response)
 
 @app.route("/slack", methods=['POST'])
