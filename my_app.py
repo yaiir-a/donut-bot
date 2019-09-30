@@ -82,8 +82,10 @@ def donut_api():
 
 @app.route("/slack", methods=['POST'])
 def donut():
+    print('headers')
     print(dict(request.headers))
-
+    print('\nform')
+    print(dict(request.form))
     text = request.form['text']
     user_id = f'<@{ request.form["user_id"] }>'
     user_name = request.form["user_name"]
