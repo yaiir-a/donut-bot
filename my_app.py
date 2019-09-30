@@ -6,9 +6,10 @@ from tabulate import tabulate
 from datetime import datetime, timedelta
 
 try:
-    from passwords import BEARER
+    from passwords import BEARER, SLACK_TOKEN
 except:
     BEARER = os.environ['BEARER']
+    SLACK_TOKEN = os.environ['SLACK_TOKEN']
 
 
 class Airtable(object):
@@ -82,15 +83,9 @@ def donut_api():
 
 @app.route("/slack", methods=['POST'])
 def donut():
-    print('headers')
-    print(dict(request.headers))
-    print('\nform')
-    print(dict(request.form))
-    try:
-        print('\nbody')
-        print(dict(request.body))
-    except:
-        pass
+    if request.form['token'] != SLACK_TOKEN:
+        return jsonify({'message': 'Nope'})
+
     text = request.form['text']
     user_id = f'<@{ request.form["user_id"] }>'
     user_name = request.form["user_name"]
