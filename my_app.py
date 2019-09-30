@@ -86,6 +86,11 @@ def donut():
     print(dict(request.headers))
     print('\nform')
     print(dict(request.form))
+    try:
+        print('\nbody')
+        print(dict(request.body))
+    except:
+        pass
     text = request.form['text']
     user_id = f'<@{ request.form["user_id"] }>'
     user_name = request.form["user_name"]
