@@ -83,7 +83,6 @@ def donut_api():
 
 @app.route("/slack", methods=['POST'])
 def donut():
-    return jsonify(SLACK_TOKEN, dict(request.form))
     if request.form['token'] != SLACK_TOKEN:
         return jsonify({'message': 'Nope'}), 401
 
