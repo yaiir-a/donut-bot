@@ -82,13 +82,14 @@ def donut_api():
 
 @app.route("/slack", methods=['POST'])
 def donut():
+    print(dict(request.headers))
+
     text = request.form['text']
     user_id = f'<@{ request.form["user_id"] }>'
     user_name = request.form["user_name"]
 
     if text == 'me':
         try:
-            user_name = jsonify(request.headers)
             a.create_entry(user_id, user_name)
             out = f'''{":doughnut:" * 11}\n:doughnut:{user_id} has been donutted!!:doughnut:\n{":doughnut:" * 11}'''
         except ValueError:
