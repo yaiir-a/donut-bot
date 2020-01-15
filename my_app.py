@@ -21,9 +21,14 @@ class Airtable(object):
     def get_all(self):
         params = {'view': 'sorted'}
         return r.get(self.base_url, headers=self.headers, params=params).json()
+    
+    # TODO def get_last_entry_per_user()
+    
+    # TODO def get_owe()
 
     def create_entry(self, donut, user_name=''):
         self._validate_entry(donut)
+        # TODO - need to include type here. add type variable which will be passed by slack 
         payload = {
             "records": [{'fields': {'donut': donut, 'user_name': user_name}}]
         }
@@ -92,15 +97,17 @@ def donut():
 
     if text == 'me':
         try:
-            a.create_entry(user_id, user_name)
+            a.create_entry(user_id, user_name). # Add type here
             out = f'''{":doughnut:" * 11}\n:doughnut:{user_id} has been donutted!!:doughnut:\n{":doughnut:" * 11}'''
         except ValueError:
             out = 'Please wait a bit before donutting again'
     elif text == 'shame':
         latest = a.latest()
         shame = a.hall_of_shame()
+        # TODO owe = a.get_owe() add to out if len(owe) > 0. maybe give how long its been outstanding?
         table = tabulate(shame, tablefmt="simple", headers=['Donut', '#'])
         out = f'''```Welcome to the Hall of Shame!\n\nThe last person to get donutted was {latest}.\n\n{table}```'''
+    # Add another elif - if it contains something looking like at @mention and @mentioned user != submitting user 
     else:
         out = ''':wave: Hi there, here is how you can use Donut Bot\n>`/donut me` to donut someone\n>`/donut shame` to see the Donut Hall of Shame'''
 
