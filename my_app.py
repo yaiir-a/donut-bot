@@ -26,11 +26,13 @@ class Airtable(object):
     
     # TODO def get_owe()
 
-    def create_entry(self, donut, user_name=''):
+    def create_entry(self, donut, user_name='', event_type='donutted'):
+        """
+        event_type can be either 'donutted' or 'brought' everything else will error from Airtable
+        """
         self._validate_entry(donut)
-        # TODO - need to include type here. add type variable which will be passed by slack 
         payload = {
-            "records": [{'fields': {'donut': donut, 'user_name': user_name}}]
+            "records": [{'fields': {'donut': donut, 'user_name': user_name, 'event_type':event_type}}]
         }
         return r.post(self.base_url, headers=self.headers, json=payload).json()
 
@@ -97,7 +99,7 @@ def donut():
 
     if text == 'me':
         try:
-            a.create_entry(user_id, user_name). # Add type here
+            a.create_entry(user_id, user_name)  # Add type here
             out = f'''{":doughnut:" * 11}\n:doughnut:{user_id} has been donutted!!:doughnut:\n{":doughnut:" * 11}'''
         except ValueError:
             out = 'Please wait a bit before donutting again'
@@ -107,9 +109,10 @@ def donut():
         # TODO owe = a.get_owe() add to out if len(owe) > 0. maybe give how long its been outstanding?
         table = tabulate(shame, tablefmt="simple", headers=['Donut', '#'])
         out = f'''```Welcome to the Hall of Shame!\n\nThe last person to get donutted was {latest}.\n\n{table}```'''
-    # Add another elif - if it contains something looking like at @mention and @mentioned user != submitting user 
+    # TODO Add another elif - if it contains something looking like at @mention and @mentioned user != submitting user f
     else:
         out = ''':wave: Hi there, here is how you can use Donut Bot\n>`/donut me` to donut someone\n>`/donut shame` to see the Donut Hall of Shame'''
+        out = f"{text} - {user_id} - {user_name}"
 
     response = {
         "response_type": "in_channel",
@@ -118,5 +121,6 @@ def donut():
     return jsonify(response)
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# if __name__ == "__main__":
+#     app.debug = True
+#     app.run(host='0.0.0.0', port=5000)
