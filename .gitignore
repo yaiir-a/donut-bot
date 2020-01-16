@@ -1,2 +1,4 @@
 passwords.py
 /__pycache__
+*.iml
+*.xml
