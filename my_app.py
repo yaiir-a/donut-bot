@@ -4,6 +4,7 @@ from collections import Counter
 import os
 from tabulate import tabulate
 from datetime import datetime, timedelta
+import re
 
 try:
     from passwords import BEARER, SLACK_TOKEN
@@ -96,6 +97,7 @@ def donut():
     text = request.form['text']
     user_id = f'<@{ request.form["user_id"] }>'
     user_name = request.form["user_name"]
+    bringer = re.search('<@[^>]*>', text)
 
     if text == 'me':
         try:
@@ -109,10 +111,13 @@ def donut():
         # TODO owe = a.get_owe() add to out if len(owe) > 0. maybe give how long its been outstanding?
         table = tabulate(shame, tablefmt="simple", headers=['Donut', '#'])
         out = f'''```Welcome to the Hall of Shame!\n\nThe last person to get donutted was {latest}.\n\n{table}```'''
-    # TODO Add another elif - if it contains something looking like at @mention and @mentioned user != submitting user f
+    elif bringer:
+        if bringer.group(0) != user_name:
+            out = 'ok different person reporting'
+        else:
+            out = 'You rascal. You need someone else to vouch that you brought donuts.'
     else:
         out = ''':wave: Hi there, here is how you can use Donut Bot\n>`/donut me` to donut someone\n>`/donut shame` to see the Donut Hall of Shame'''
-        out = f"{text} - {user_id} - {user_name}"
 
     response = {
         "response_type": "in_channel",
