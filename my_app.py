@@ -114,6 +114,7 @@ def donut():
     elif bringer:
         if bringer.group(0) != user_id:
             out = 'ok different person reporting'
+            out = f'{bringer.group(0)}, {user_id}, {text}, {user_name}'
         else:
             out = 'You rascal. You need someone else to vouch that you brought donuts.'
     else:
