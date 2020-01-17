@@ -112,12 +112,13 @@ def donut():
         table = tabulate(shame, tablefmt="simple", headers=['Donut', '#'])
         out = f'''```Welcome to the Hall of Shame!\n\nThe last person to get donutted was {latest}.\n\n{table}```'''
     elif bringer:
-        if bringer.group(0) != user_name:
+        if bringer.group(0) != user_id:
             out = 'ok different person reporting'
         else:
             out = 'You rascal. You need someone else to vouch that you brought donuts.'
     else:
         out = ''':wave: Hi there, here is how you can use Donut Bot\n>`/donut me` to donut someone\n>`/donut shame` to see the Donut Hall of Shame'''
+        out = f"{text} - {user_id} - {user_name}"
 
     response = {
         "response_type": "in_channel",
