@@ -97,7 +97,7 @@ def donut():
     text = request.form['text']
     user_id = f'<@{ request.form["user_id"] }>'
     user_name = request.form["user_name"]
-    bringer = re.search('<@[^>]*>', text)
+    bringer = re.search('<@[^>]*>|$', text).group()
 
     if text == 'me':
         try:
@@ -112,11 +112,11 @@ def donut():
         table = tabulate(shame, tablefmt="simple", headers=['Donut', '#'])
         out = f'''```Welcome to the Hall of Shame!\n\nThe last person to get donutted was {latest}.\n\n{table}```'''
     elif bringer:
-        if bringer.group(0) != user_id:  # TODO figure out why this bit is not working
-            out = 'ok different person reporting'
-            out = f'`{bringer.group(0)}, {user_id}, {text}, {user_name}, {request.form["user_id"]}`'
-        else:
-            out = 'You rascal. You need someone else to vouch that you brought donuts.'
+        if bringer == user_id:
+            out = 'same person'
+        else:  # fair report
+            out = f'`{bringer}, {user_id}, {text}, {user_name}, {request.form["user_id"]}`'
+            print(out)
     else:
         out = ''':wave: Hi there, here is how you can use Donut Bot\n>`/donut me` to donut someone\n>`/donut shame` to see the Donut Hall of Shame'''
         out = f"{text} - {user_id} - {user_name}"
