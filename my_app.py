@@ -98,7 +98,7 @@ def donut():
     user_id = f'<@{ request.form["user_id"] }>'
     user_name = request.form["user_name"]
 
-    bringer = re.search('<@[^>]*>|$', text).group()
+    bringer = re.search('<@[^|>]*|$', text).group()
 
     if text == 'me':
         try:
@@ -114,12 +114,12 @@ def donut():
         out = f'''```Welcome to the Hall of Shame!\n\nThe last person to get donutted was {latest}.\n\n{table}```'''
 
     elif bringer:
+        bringer += '>'
         if request.form['user_id'] in bringer:
-            out = 'trying to report self'
+            out = "Are you sure that you brought donuts? Maybe ask someone else to vouch for you :p"
         else:
-            out = 'trying to report someone else'
-            out = f'{text} ** {bringer}'
-            print(out)
+            a.create_entry(bringer, '', 'brought')
+            out = f'''{user_id} reports that {bringer} has brought donuts!'''
     else:
         out = ''':wave: Hi there, here is how you can use Donut Bot\n>`/donut me` to donut someone\n>`/donut shame` to see the Donut Hall of Shame'''
 
