@@ -31,7 +31,7 @@ class Airtable(object):
         """
         event_type can be either 'donutted' or 'brought' everything else will error from Airtable
         """
-        self._validate_entry(donut)
+        self._validate_entry(donut, user_name, event_type)
         payload = {
             "records": [{'fields': {'donut': donut, 'user_name': user_name, 'event_type':event_type}}]
         }
@@ -51,16 +51,23 @@ class Airtable(object):
         names = self.donuts()
         return Counter(names).most_common()
 
-    def _validate_entry(self, donut):
-        match_time = False
-        for d in self.get_all()['records']:
-            if d['fields']['donut'] == donut:
-                match_time = datetime.fromisoformat(d['createdTime'][:-1])
-                break
-        if match_time:
-            acceptable_start = datetime.utcnow() - timedelta(minutes=5)
-            if match_time > acceptable_start:
-                raise ValueError
+    def _validate_entry(self, donut, user_name, event_type):
+        if event_type == 'donutted':
+            match_time = False
+            for d in self.get_all()['records']:
+                if d['fields']['donut'] == donut:
+                    match_time = datetime.fromisoformat(d['createdTime'][:-1])
+                    break
+            if match_time:
+                acceptable_start = datetime.utcnow() - timedelta(minutes=5)
+                if match_time > acceptable_start:
+                    raise ValueError('User donutted too soon')
+        elif event_type == 'brought':
+            # TODO validate that donut owes, and that user_name matches the username on that entry
+            pass
+
+        else:
+            raise Exception('Invalid event_type')
 
 
 a = Airtable()
@@ -98,7 +105,10 @@ def donut():
     user_id = f'<@{ request.form["user_id"] }>'
     user_name = request.form["user_name"]
 
-    bringer = re.search('<@[^|>]*|$', text).group()
+    bringer_id = re.search(r'<@[^|>]*|$', text).group()
+    if bringer_id:
+        bringer_id += '>'
+    bringer_name = re.search(r'\|[^>]*>|$', text).group()[1:-1]
 
     if text == 'me':
         try:
@@ -113,13 +123,12 @@ def donut():
         table = tabulate(shame, tablefmt="simple", headers=['Donut', '#'])
         out = f'''```Welcome to the Hall of Shame!\n\nThe last person to get donutted was {latest}.\n\n{table}```'''
 
-    elif bringer:
-        bringer += '>'
-        if request.form['user_id'] in bringer:
+    elif bringer_id:
+        if request.form['user_id'] in bringer_id:
             out = "Are you sure that you brought donuts? Maybe ask someone else to vouch for you :p"
         else:
-            a.create_entry(bringer, '', 'brought')
-            out = f'''{user_id} reports that {bringer} has brought donuts!'''
+            a.create_entry(bringer_id, bringer_name, 'brought')
+            out = f'''{user_id} reports that {bringer_id} has brought donuts!'''
     else:
         out = ''':wave: Hi there, here is how you can use Donut Bot\n>`/donut me` to donut someone\n>`/donut shame` to see the Donut Hall of Shame'''
 
