@@ -118,6 +118,8 @@ def donut():
             out = 'trying to report self'
         else:
             out = 'trying to report someone else'
+            out = f'{text} ** {bringer}'
+            print(out)
     else:
         out = ''':wave: Hi there, here is how you can use Donut Bot\n>`/donut me` to donut someone\n>`/donut shame` to see the Donut Hall of Shame'''
 
