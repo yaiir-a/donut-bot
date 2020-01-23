@@ -62,8 +62,11 @@ class Airtable(object):
                 acceptable_start = datetime.utcnow() - timedelta(minutes=5)
                 if match_time > acceptable_start:
                     raise ValueError('User donutted too soon')
+
         elif event_type == 'brought':
             # TODO validate that donut owes, and that user_name matches the username on that entry
+            # does donut owe?
+            # does username match donut?
             pass
 
         else:
@@ -85,7 +88,10 @@ def donut_api():
     if request.headers['Authorization'] != a.headers['Authorization']:
         return jsonify({"message": "No"}), 401
 
-    if request.method == 'POST':
+    
+    if request.method == 'GET':
+        response = a.get_all()
+    elif request.method == 'POST':
         body = request.get_json()
         try:
             response = a.create_entry(**body)
@@ -116,6 +122,7 @@ def donut():
             out = f'''{":doughnut:" * 11}\n:doughnut:{user_id} has been donutted!!:doughnut:\n{":doughnut:" * 11}'''
         except ValueError:
             out = 'Please wait a bit before donutting again'
+
     elif text == 'shame':
         latest = a.latest()
         shame = a.hall_of_shame()
@@ -129,6 +136,7 @@ def donut():
         else:
             a.create_entry(bringer_id, bringer_name, 'brought')
             out = f'''{user_id} reports that {bringer_id} has brought donuts!'''
+
     else:
         out = ''':wave: Hi there, here is how you can use Donut Bot\n>`/donut me` to donut someone\n>`/donut shame` to see the Donut Hall of Shame'''
 
