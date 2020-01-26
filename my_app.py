@@ -7,10 +7,11 @@ from datetime import datetime, timedelta
 import re
 
 try:
-    from passwords import BEARER, SLACK_TOKEN
+    from passwords import BEARER, SLACK_TOKEN, SLACK_OAUTH_ACESS_TOKEN
 except:
     BEARER = os.environ['BEARER']
     SLACK_TOKEN = os.environ['SLACK_TOKEN']
+    SLACK_OAUTH_ACESS_TOKEN = os.environ['SLACK_OAUTH_ACESS_TOKEN']
 
 
 class Airtable(object):
@@ -18,14 +19,29 @@ class Airtable(object):
         self.headers = {'Authorization': BEARER,
                         'Content-Type': 'application/json'}
         self.base_url = "https://api.airtable.com/v0/apphBP3YhZKaBIYti/donuts"
+        self.entries = self.get_all()
 
     def get_all(self):
         params = {'view': 'sorted'}
-        return r.get(self.base_url, headers=self.headers, params=params).json()
-    
-    # TODO def get_last_entry_per_user()
-    
-    # TODO def get_owe()
+        return r.get(self.base_url, headers=self.headers, params=params).json()['records']
+
+    def last_entry_per_donut(self):
+        latest = {}
+        for entry in self.entries:
+            donut = entry['fields']['donut']
+            try:
+                latest[donut]
+            except KeyError:
+                latest[donut] = entry
+        return latest
+
+    def get_owe(self):
+        owes = []
+        for entry in self.last_entry_per_donut().values():  # TODO should I keep the user_id as a dict to make it easy to find if someone owes?
+            fields = entry['fields']
+            if fields['event_type'] == 'donutted':
+                owes += [(fields['user_name'], fields['created'])]
+        return owes
 
     def create_entry(self, donut, user_name='', event_type='donutted'):
         """
@@ -38,9 +54,7 @@ class Airtable(object):
         return r.post(self.base_url, headers=self.headers, json=payload).json()
 
     def donuts(self):
-        entries = self.get_all()
-        names = [entry['fields']['display_name']
-                 for entry in entries['records']]
+        names = [entry['fields']['display_name'] for entry in self.entries]
         return names
 
     def latest(self):
@@ -54,7 +68,7 @@ class Airtable(object):
     def _validate_entry(self, donut, user_name, event_type):
         if event_type == 'donutted':
             match_time = False
-            for d in self.get_all()['records']:
+            for d in self.entries:
                 if d['fields']['donut'] == donut:
                     match_time = datetime.fromisoformat(d['createdTime'][:-1])
                     break
@@ -88,15 +102,16 @@ def donut_api():
     if request.headers['Authorization'] != a.headers['Authorization']:
         return jsonify({"message": "No"}), 401
 
-    
     if request.method == 'GET':
         response = a.get_all()
+
     elif request.method == 'POST':
         body = request.get_json()
         try:
             response = a.create_entry(**body)
         except ValueError:
             response = {'message': 'Nah'}
+
     else:
         response = a.hall_of_shame()
     return jsonify(response)
@@ -140,8 +155,19 @@ def donut():
     else:
         out = ''':wave: Hi there, here is how you can use Donut Bot\n>`/donut me` to donut someone\n>`/donut shame` to see the Donut Hall of Shame'''
 
+    payload = {
+        "channel": "CLDHP8ZU7",
+        "text": out
+    }
+    url = "https://slack.com/api/chat.postMessage"
+    headers = {
+        "Content-type": "application/json",
+        "Authorization": f"Bearer {SLACK_OAUTH_ACESS_TOKEN}"
+    }
+    r.post(url, headers=headers, json=payload)
+
     response = {
-        "response_type": "in_channel",
+        "response_type": "ephemeral",
         "text": out
     }
     return jsonify(response)
