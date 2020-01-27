@@ -40,7 +40,7 @@ class Airtable(object):
         for entry in self.last_entry_per_donut().values():  # TODO should I keep the user_id as a dict to make it easy to find if someone owes?
             fields = entry['fields']
             if fields['event_type'] == 'donutted':
-                owes += [(fields['user_name'], fields['created'])]
+                owes += [(fields['donut'], fields['user_name'], fields['created'])]
         return owes
 
     def create_entry(self, donut, user_name='', event_type='donutted'):
@@ -49,7 +49,7 @@ class Airtable(object):
         """
         self._validate_entry(donut, user_name, event_type)
         payload = {
-            "records": [{'fields': {'donut': donut, 'user_name': user_name, 'event_type':event_type}}]
+            "records": [{'fields': {'donut': donut, 'user_name': user_name, 'event_type': event_type}}]
         }
         return r.post(self.base_url, headers=self.headers, json=payload).json()
 
@@ -78,10 +78,11 @@ class Airtable(object):
                     raise ValueError('User donutted too soon')
 
         elif event_type == 'brought':
-            # TODO validate that donut owes, and that user_name matches the username on that entry
-            # does donut owe?
-            # does username match donut?
-            pass
+            for owe_donut, owe_user_name, _ in self.get_owe():
+                if (donut == owe_donut) and (user_name == owe_user_name):
+                    break
+            else:
+                raise ValueError('Person reported does not seem to owe donuts')
 
         else:
             raise Exception('Invalid event_type')
@@ -103,7 +104,7 @@ def donut_api():
         return jsonify({"message": "No"}), 401
 
     if request.method == 'GET':
-        response = a.get_all()
+        response = a.get_owe()
 
     elif request.method == 'POST':
         body = request.get_json()
@@ -123,7 +124,7 @@ def donut():
         return jsonify({'message': 'Nope'}), 401
 
     text = request.form['text']
-    user_id = f'<@{ request.form["user_id"] }>'
+    user_id = f'<@{request.form["user_id"]}>'
     user_name = request.form["user_name"]
 
     bringer_id = re.search(r'<@[^|>]*|$', text).group()
@@ -133,7 +134,7 @@ def donut():
 
     if text == 'me':
         try:
-            a.create_entry(user_id, user_name)  # Add type here
+            a.create_entry(user_id, user_name)
             out = f'''{":doughnut:" * 11}\n:doughnut:{user_id} has been donutted!!:doughnut:\n{":doughnut:" * 11}'''
         except ValueError:
             out = 'Please wait a bit before donutting again'
@@ -149,8 +150,11 @@ def donut():
         if request.form['user_id'] in bringer_id:
             out = "Are you sure that you brought donuts? Maybe ask someone else to vouch for you :p"
         else:
-            a.create_entry(bringer_id, bringer_name, 'brought')
-            out = f'''{user_id} reports that {bringer_id} has brought donuts!'''
+            try:
+                a.create_entry(bringer_id, bringer_name, 'brought')
+                out = f'''{user_id} reports that {bringer_id} has brought donuts!'''
+            except ValueError:
+                out = 'It doesnt seem like that person owes donuts'
 
     else:
         out = ''':wave: Hi there, here is how you can use Donut Bot\n>`/donut me` to donut someone\n>`/donut shame` to see the Donut Hall of Shame'''
@@ -168,7 +172,6 @@ def donut():
 
     response = {
         "response_type": "ephemeral",
-        "text": out
+        "text": "check #random for response"
     }
     return jsonify(response)
-
