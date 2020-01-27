@@ -56,7 +56,8 @@ class Airtable(object):
         return resp
 
     def donuts(self):
-        names = [entry['fields']['display_name'] for entry in self.entries]
+        names = [entry['fields']['display_name'] for entry in self.entries if
+                 entry['fields']['event_type'] == 'donutted']
         return names
 
     def latest(self):
