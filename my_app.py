@@ -146,7 +146,7 @@ def donut():
         a.update_entries()
         latest_string = f"\n\nThe last person to get donutted was {a.latest()}."
         owe = [owe_user_name for (_, owe_user_name, _) in a.get_owe()]
-        owe_string = f"\n\nThese people owe donuts: {', '.join(owe)}." if owe else "Nobody owes donuts right now!"
+        owe_string = f"\n\nThese people still owe donuts: {', '.join(owe)}." if owe else "Nobody owes donuts right now!"
         shame = a.hall_of_shame()
         table = tabulate(shame, tablefmt="simple", headers=['Donut', '#'])
         out = f'''```Welcome to the Hall of Shame!{latest_string}{owe_string}\n\n{table}```'''
@@ -157,7 +157,9 @@ def donut():
         else:
             try:
                 a.create_entry(bringer_id, bringer_name, 'brought')
-                out = f'''{user_id} reports that {bringer_id} has brought donuts!'''
+                owe = [owe_user_name for (_, owe_user_name, _) in a.get_owe()]
+                owe_string = f"\n\nThese people still owe donuts: {', '.join(owe)}." if owe else "Nobody owes donuts right now!"
+                out = f'''{user_id} reports that {bringer_id} has brought donuts!\n{owe_string}'''
             except ValueError:
                 out = 'It doesnt seem like that person owes donuts'
 
