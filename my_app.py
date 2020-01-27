@@ -51,7 +51,9 @@ class Airtable(object):
         payload = {
             "records": [{'fields': {'donut': donut, 'user_name': user_name, 'event_type': event_type}}]
         }
-        return r.post(self.base_url, headers=self.headers, json=payload).json()
+        resp = r.post(self.base_url, headers=self.headers, json=payload).json()
+        self.entries = self.get_all()
+        return resp
 
     def donuts(self):
         names = [entry['fields']['display_name'] for entry in self.entries]
