@@ -142,11 +142,12 @@ def donut():
             out = 'Please wait a bit before donutting again'
 
     elif text == 'shame':
-        latest = a.latest()
-        shame = a.hall_of_shame()
+        latest_string = f"\n\nThe last person to get donutted was {a.latest()}."
         owe = [owe_user_name for (_, owe_user_name, _) in a.get_owe()]
+        owe_string = f"\n\nThese people owe donuts:{', '.join(owe)}." if owe else "Nobody owes donuts right now!"
+        shame = a.hall_of_shame()
         table = tabulate(shame, tablefmt="simple", headers=['Donut', '#'])
-        out = f'''```Welcome to the Hall of Shame!\n\nThe last person to get donutted was {latest}.\n\nThese people owe donuts:{owe}\n\n{table}```'''
+        out = f'''```Welcome to the Hall of Shame!{latest_string}{owe_string}\n\n{table}```'''
 
     elif bringer_id:
         if request.form['user_id'] in bringer_id:
