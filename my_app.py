@@ -65,7 +65,6 @@ class Airtable(object):
         return names[0]
 
     def hall_of_shame(self):
-
         names = self.donuts()
         return Counter(names).most_common()
 
@@ -166,7 +165,7 @@ def donut():
         out = ''':wave: Hi there, here is how you can use Donut Bot\n>`/donut me` to donut someone\n>`/donut shame` to see the Donut Hall of Shame'''
 
     payload = {
-        "channel": "CLDHP8ZU7",
+        "channel": "C0B6XTPC5",
         "text": out
     }
     url = "https://slack.com/api/chat.postMessage"
