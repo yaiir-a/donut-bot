@@ -19,11 +19,11 @@ class Airtable(object):
         self.headers = {'Authorization': BEARER,
                         'Content-Type': 'application/json'}
         self.base_url = "https://api.airtable.com/v0/apphBP3YhZKaBIYti/donuts"
-        self.entries = self.get_all()
+        self.update_entries()
 
-    def get_all(self):
+    def update_entries(self):
         params = {'view': 'sorted'}
-        return r.get(self.base_url, headers=self.headers, params=params).json()['records']
+        self.entries = r.get(self.base_url, headers=self.headers, params=params).json()['records']
 
     def last_entry_per_donut(self):
         latest = {}
@@ -47,7 +47,7 @@ class Airtable(object):
         """
         event_type can be either 'donutted' or 'brought' everything else will error from Airtable
         """
-        self.entries = self.get_all()
+        self.update_entries()
         self._validate_entry(donut, user_name, event_type)
         payload = {
             "records": [{'fields': {'donut': donut, 'user_name': user_name, 'event_type': event_type}}]
@@ -64,6 +64,7 @@ class Airtable(object):
         return names[0]
 
     def hall_of_shame(self):
+
         names = self.donuts()
         return Counter(names).most_common()
 
@@ -142,6 +143,7 @@ def donut():
             out = 'Please wait a bit before donutting again'
 
     elif text == 'shame':
+        a.update_entries()
         latest_string = f"\n\nThe last person to get donutted was {a.latest()}."
         owe = [owe_user_name for (_, owe_user_name, _) in a.get_owe()]
         owe_string = f"\n\nThese people owe donuts:{', '.join(owe)}." if owe else "Nobody owes donuts right now!"
