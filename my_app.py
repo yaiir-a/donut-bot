@@ -37,7 +37,7 @@ class Airtable(object):
 
     def get_owe(self):
         owes = []
-        for entry in self.last_entry_per_donut().values():  # TODO should I keep the user_id as a dict to make it easy to find if someone owes?
+        for entry in self.last_entry_per_donut().values():
             fields = entry['fields']
             if fields['event_type'] == 'donutted':
                 owes += [(fields['donut'], fields['user_name'], fields['created'])]
@@ -144,9 +144,9 @@ def donut():
     elif text == 'shame':
         latest = a.latest()
         shame = a.hall_of_shame()
-        # TODO owe = a.get_owe() add to out if len(owe) > 0. maybe give how long its been outstanding?
+        owe = [owe_user_name for (_, owe_user_name, _) in a.get_owe()]
         table = tabulate(shame, tablefmt="simple", headers=['Donut', '#'])
-        out = f'''```Welcome to the Hall of Shame!\n\nThe last person to get donutted was {latest}.\n\n{table}```'''
+        out = f'''```Welcome to the Hall of Shame!\n\nThe last person to get donutted was {latest}.\n\nThese people owe donuts:{owe}\n\n{table}```'''
 
     elif bringer_id:
         if request.form['user_id'] in bringer_id:
