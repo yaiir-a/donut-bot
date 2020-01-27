@@ -47,12 +47,12 @@ class Airtable(object):
         """
         event_type can be either 'donutted' or 'brought' everything else will error from Airtable
         """
+        self.entries = self.get_all()
         self._validate_entry(donut, user_name, event_type)
         payload = {
             "records": [{'fields': {'donut': donut, 'user_name': user_name, 'event_type': event_type}}]
         }
         resp = r.post(self.base_url, headers=self.headers, json=payload).json()
-        self.entries = self.get_all()
         return resp
 
     def donuts(self):
