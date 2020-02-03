@@ -27,6 +27,7 @@ class Airtable(object):
 
     def last_entry_per_donut(self):
         latest = {}
+        self.update_entries()
         for entry in self.entries:
             donut = entry['fields']['donut']
             try:
