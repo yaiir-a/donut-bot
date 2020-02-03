@@ -165,7 +165,7 @@ def donut():
                 out = 'It doesnt seem like that person owes donuts'
 
     else:
-        out = ''':wave: Hi there, here is how you can use Donut Bot\n>`/donut me` to donut someone\n>`/donut shame` to see the Donut Hall of Shame'''
+        out = ''':wave: Hi there, here is how you can use Donut Bot\n>`/donut me` to donut someone\n>`/donut shame` to see the Donut Hall of Shame\n`/donut @someone` when someone brings in donuts'''
 
     payload = {
         "channel": "C0B6XTPC5",
